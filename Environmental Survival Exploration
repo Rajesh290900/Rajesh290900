@@ -1,0 +1,101 @@
+import random
+
+# Player class
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.health = 100
+        self.hunger = 0
+        self.inventory = []
+
+    def eat(self):
+        if "Food" in self.inventory:
+            self.hunger = 0
+            self.inventory.remove("Food")
+            print("You ate and satisfied your hunger.")
+        else:
+            print("You don't have any food to eat.")
+
+    def take_damage(self, damage):
+        self.health -= damage
+
+    def is_alive(self):
+        return self.health > 0
+
+
+# Environment class
+class Environment:
+    def __init__(self):
+        self.weather = "Sunny"
+
+    def change_weather(self):
+        weather_options = ["Sunny", "Cloudy", "Rainy"]
+        self.weather = random.choice(weather_options)
+
+
+# Game loop
+def game_loop():
+    player_name = input("Enter your name: ")
+    player = Player(player_name)
+    environment = Environment()
+
+    while player.is_alive():
+        print("--------------------------------------------------")
+        print(f"{player.name} - Health: {player.health} - Hunger: {player.hunger}")
+        print("Inventory:", player.inventory)
+        print("--------------------------------------------------")
+
+        # Update game world
+        environment.change_weather()
+        player.hunger += 1
+
+        # Player actions
+        choice = input("What do you want to do? (1 - Eat, 2 - Explore): ")
+
+        if choice == "1":
+            player.eat()
+        elif choice == "2":
+            if environment.weather == "Sunny":
+                explore_sunny(player)
+            elif environment.weather == "Cloudy":
+                explore_cloudy(player)
+            elif environment.weather == "Rainy":
+                explore_rainy(player)
+
+        if player.hunger >= 3:
+            player.take_damage(5)
+            print("You're hungry! You took 5 damage.")
+
+    print("Game over!")
+
+
+def explore_sunny(player):
+    print("You explored the sunny environment.")
+
+    # Random events during exploration
+    if random.random() < 0.2:
+        print("You found some food!")
+        player.inventory.append("Food")
+
+
+def explore_cloudy(player):
+    print("You explored the cloudy environment.")
+
+    # Random events during exploration
+    if random.random() < 0.3:
+        print("You found some resources!")
+        player.inventory.append("Resources")
+
+
+def explore_rainy(player):
+    print("It's raining, and you got wet. You took 10 damage.")
+    player.take_damage(10)
+
+    # Random events during exploration
+    if random.random() < 0.1:
+        print("You took shelter and found a valuable item!")
+        player.inventory.append("Valuable Item")
+
+
+# Start the game
+game_loop()
